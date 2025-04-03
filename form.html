@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de réservation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: whitesmoke;
+            color: rgb(46, 41, 41);
+            border-radius: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background-color: rgb(0, 184, 0);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        img {
+            max-width: 50%;
+            height: auto;
+            margin-bottom: 3px;
+            border-radius: 3px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        function validateForm(event) {
+            event.preventDefault();
+            let nomPrenom = document.forms["reservationForm"]["nom_prenom"].value;
+            if (nomPrenom.trim() === "") {
+                alert("Le champ Nom et Prénom est obligatoire.");
+                return false;
+            }
+            generatePDF();
+        }
+        function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    let doc = new jsPDF("p", "mm", "a4");
+    let headerImg = new Image();
+    headerImg.src = "2.png";
+    let backgroundImg = new Image();
+    backgroundImg.src = "1.png";
+    let Img = new Image();
+    Img.src = "3.png";
+    doc.setFillColor(0, 153, 76);
+    doc.rect(0, 0, 210, 20, 'F');
+    doc.addImage(headerImg, 'PNG', 70, 2, 70, 20);
+    
+    
+
+    backgroundImg.onload = function () {
+        doc.setGState(new doc.GState({ opacity: 0.5 }));
+        let imgWidth = 105;
+        let imgHeight = 120;
+        let xPos = (210 - imgWidth) / 2; 
+        let yPos = 30; 
+        doc.addImage(backgroundImg, "PNG", xPos, yPos, imgWidth, imgHeight);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(15);
+        doc.text("Reservation Receipt", 20, 25);
+        let form = document.forms["reservationForm"];
+        let y = 50;
+        function addField(label, value) {
+            doc.setFont("helvetica", "bold");
+            doc.text(label + ":", 20, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(value, 80, y);
+            y += 10;
+        }
+
+        addField("Name & surname", form["nom_prenom"].value);
+        addField("Phone number", form["telephone"].value);
+        addField("Email", form["mail"].value);
+        addField("Tour type", form["tour_type"].value);
+        addField("Tour date", form["date_tour"].value);
+        addField("Tour time", form["horaire_tour"].value);
+        addField("N° adults", form["nombre_adult"].value);
+        addField("N° boys & girls", form["nombre_boys"].value);
+        addField("N° children", form["nombre_children"].value);
+        addField("N° order", form["nombre_order"].value);
+        doc.addImage(Img, 'PNG', 210-80-10, 210-20-10, 60, 20);
+        doc.rect(15, 45, 180, y - 40);
+        window.open(doc.output("bloburl"), "_blank");
+    };
+}
+
+</script>
+
+    
+</head>
+<body>
+    <div class="container">
+        <img src="1.png" alt="Image de présentation">
+        <h1>Book Your Tour</h1>
+        <img src="2.png" alt="Image de présentation">
+        <form name="reservationForm" onsubmit="validateForm(event)">
+            <table>
+                <tr><th>Name & surname</th><td><input type="text" name="nom_prenom" required></td></tr>
+                <tr><th>Phone number</th><td><input type="tel" name="telephone" required></td></tr>
+                <tr><th>Email</th><td><input type="email" name="mail" required></td></tr>
+                <tr><th>Tour type</th><td><select name="tour_type" required><option>Classic</option><option>Premium</option><option>VIP</option></select></td></tr>
+                <tr><th>Tour date</th><td><input type="date" name="date_tour" required></td></tr>
+                <tr><th>Tour time</th><td><input type="time" name="horaire_tour" required></td></tr>
+                <tr><th>N° adults</th><td><input type="number" name="nombre_adult" min="1" required></td></tr>
+                <tr><th>N° boys & girls</th><td><input type="number" name="nombre_boys" min="0" required></td></tr>
+                <tr><th>N° children</th><td><input type="number" name="nombre_children" min="0" required></td></tr>
+                <tr><th>N° order</th><td><input type="number" name="nombre_order" min="1" required></td></tr>
+            </table>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
